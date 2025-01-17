@@ -19,6 +19,11 @@ DialogWindow {
     height: 230
     modality: Qt.ApplicationModal
     icon: globalVariant.appIconName
+
+    header: DialogTitleBar {
+        enableInWindowBlendBlur: false
+    }
+
     Column {
         width: parent.width
         height: parent.height
@@ -108,7 +113,7 @@ DialogWindow {
                             Presenter.setValueToSettings("base.close.close_action", closeAction)
                         }
                         Presenter.syncToSettings();
-                        Qt.quit()
+                        Presenter.forceExit();
                     }
                 }
             }

@@ -45,19 +45,19 @@ static bool moreThanTimestampASC(MediaMeta v1, MediaMeta v2)
     return v1.timestamp < v2.timestamp;
 }
 
-static bool moreThanTitleASC(const MediaMeta v1, const MediaMeta v2)
+static bool moreThanTitleASC(const MediaMeta &v1, const MediaMeta &v2)
 {
-    return v1.pinyinTitle.toLower() <= v2.pinyinTitle.toLower();
+    return v1.pinyinTitle.toLower() < v2.pinyinTitle.toLower();
 }
 
-static bool moreThanArtistASC(MediaMeta v1, MediaMeta v2)
+static bool moreThanArtistASC(const MediaMeta &v1, const MediaMeta &v2)
 {
-    return v1.pinyinArtist.toLower() <= v2.pinyinArtist.toLower();
+    return v1.pinyinArtist.toLower() < v2.pinyinArtist.toLower();
 }
 
-static bool moreThanAblumASC(const MediaMeta v1, const MediaMeta v2)
+static bool moreThanAblumASC(const MediaMeta &v1, const MediaMeta &v2)
 {
-    return v1.pinyinAlbum.toLower() <= v2.pinyinAlbum.toLower();
+    return v1.pinyinAlbum.toLower() < v2.pinyinAlbum.toLower();
 }
 // 降序
 static bool moreThanTimestampDES(MediaMeta v1, MediaMeta v2)
@@ -65,19 +65,19 @@ static bool moreThanTimestampDES(MediaMeta v1, MediaMeta v2)
     return v1.timestamp > v2.timestamp;
 }
 
-static bool moreThanTitleDES(const MediaMeta v1, const MediaMeta v2)
+static bool moreThanTitleDES(const MediaMeta &v1, const MediaMeta &v2)
 {
-    return v1.pinyinTitle.toLower() >= v2.pinyinTitle.toLower();
+    return v1.pinyinTitle.toLower() > v2.pinyinTitle.toLower();
 }
 
-static bool moreThanArtistDES(MediaMeta v1, MediaMeta v2)
+static bool moreThanArtistDES(const MediaMeta &v1, const MediaMeta &v2)
 {
-    return v1.pinyinArtist.toLower() >= v2.pinyinArtist.toLower();
+    return v1.pinyinArtist.toLower() > v2.pinyinArtist.toLower();
 }
 
-static bool moreThanAblumDES(const MediaMeta v1, const MediaMeta v2)
+static bool moreThanAblumDES(const MediaMeta &v1, const MediaMeta &v2)
 {
-    return v1.pinyinAlbum.toLower() >= v2.pinyinAlbum.toLower();
+    return v1.pinyinAlbum.toLower() > v2.pinyinAlbum.toLower();
 }
 
 // 升序
@@ -86,19 +86,19 @@ static bool moreThanAlbumTimestampASC(AlbumInfo v1, AlbumInfo v2)
     return v1.timestamp < v2.timestamp;
 }
 
-static bool moreThanAlbumTitleASC(const AlbumInfo v1, const AlbumInfo v2)
+static bool moreThanAlbumTitleASC(const AlbumInfo &v1, const AlbumInfo &v2)
 {
-    return v1.pinyin.toLower() <= v2.pinyin.toLower();
+    return v1.pinyin.toLower() < v2.pinyin.toLower();
 }
 // 降序
-static bool moreThanAlbumTimestampDES(AlbumInfo v1, AlbumInfo v2)
+static bool moreThanAlbumTimestampDES(const AlbumInfo &v1, const AlbumInfo &v2)
 {
     return v1.timestamp > v2.timestamp;
 }
 
-static bool moreThanAlbumTitleDES(const AlbumInfo v1, const AlbumInfo v2)
+static bool moreThanAlbumTitleDES(const AlbumInfo &v1, const AlbumInfo &v2)
 {
-    return v1.pinyin.toLower() >= v2.pinyin.toLower();
+    return v1.pinyin.toLower() > v2.pinyin.toLower();
 }
 
 // 升序
@@ -107,9 +107,9 @@ static bool moreThanArtistTimestampASC(ArtistInfo v1, ArtistInfo v2)
     return v1.timestamp < v2.timestamp;
 }
 
-static bool moreThanArtistTitleASC(ArtistInfo v1, ArtistInfo v2)
+static bool moreThanArtistTitleASC(const ArtistInfo &v1, const ArtistInfo &v2)
 {
-    return v1.pinyin.toLower() <= v2.pinyin.toLower();
+    return v1.pinyin.toLower() < v2.pinyin.toLower();
 }
 // 降序
 static bool moreThanArtistTimestampDES(ArtistInfo v1, ArtistInfo v2)
@@ -117,9 +117,9 @@ static bool moreThanArtistTimestampDES(ArtistInfo v1, ArtistInfo v2)
     return v1.timestamp > v2.timestamp;
 }
 
-static bool moreThanArtistTitleDES(ArtistInfo v1, ArtistInfo v2)
+static bool moreThanArtistTitleDES(const ArtistInfo &v1, const ArtistInfo &v2)
 {
-    return v1.pinyin.toLower() >= v2.pinyin.toLower();
+    return v1.pinyin.toLower() > v2.pinyin.toLower();
 }
 
 class DataManagerPrivate
@@ -985,9 +985,9 @@ void DataManager::addMetasToPlayList(const QList<QString> &metaHash,
                 emit signalAddOneMeta(playlistHashs, meta, addToPlay);
             }
         }
-        curPlaylist.sortCustomMetas = curPlaylist.sortMetas;
     }
-    emit signalAddMetaFinished(allPlaylistHashs.toList());
+    curPlaylist.sortCustomMetas = curPlaylist.sortMetas;
+    emit signalAddMetaFinished(allPlaylistHashs.values());
 }
 
 void DataManager::addMetasToPlayList(const QList<MediaMeta> &metas, const QString &playlistHash, const bool &addToPlay)
@@ -1034,9 +1034,9 @@ void DataManager::addMetasToPlayList(const QList<MediaMeta> &metas, const QStrin
                 emit signalAddOneMeta(playlistHashs, meta, addToPlay);
             }
         }
-        curPlaylist.sortCustomMetas = curPlaylist.sortMetas;
     }
-    emit signalAddMetaFinished(allPlaylistHashs.toList());
+    curPlaylist.sortCustomMetas = curPlaylist.sortMetas;
+    emit signalAddMetaFinished(allPlaylistHashs.values());
 }
 
 void DataManager::clearPlayList(const QString &playlistHash, const bool &addToPlay)
@@ -1064,7 +1064,7 @@ void DataManager::removeFromPlayList(const QStringList listToDel, const QString 
             int curIndex = curPlaylist.sortMetas.indexOf(hash);
             if (curIndex >= 0 && curIndex < curPlaylist.sortMetas.size()) {
                 curPlaylist.sortMetas.removeAt(curIndex);
-                curPlaylist.sortCustomMetas.removeAt(curIndex);
+                curPlaylist.sortCustomMetas.removeOne(hash);
                 QStringList playlistHashs;
                 playlistHashs << playlistHash;
                 emit signalDeleteOneMeta(playlistHashs, hash, true);
@@ -1077,7 +1077,8 @@ void DataManager::removeFromPlayList(const QStringList listToDel, const QString 
                 int curIndex = playlist.sortMetas.indexOf(hash);
                 if (curIndex >= 0 && curIndex < playlist.sortMetas.size()) {
                     playlist.sortMetas.removeAt(curIndex);
-                    playlist.sortCustomMetas.removeAt(curIndex);
+                    if (curIndex >= 0 && curIndex < playlist.sortCustomMetas.size())
+                        playlist.sortCustomMetas.removeAt(curIndex);
                     playlistHashs << playlist.uuid;
                 }
             }

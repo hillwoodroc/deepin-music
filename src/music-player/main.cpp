@@ -51,11 +51,10 @@ int main(int argc, char *argv[])
     setenv("PULSE_PROP_media.role", "music", 1);
 
     DmGlobal::checkWaylandMode();
-    if (DmGlobal::isWaylandMode()) //是否开启wayland
-        qputenv("QT_WAYLAND_SHELL_INTEGRATION", "kwayland-shell"); //add wayland parameter
 
     QSurfaceFormat format;
     format.setRenderableType(QSurfaceFormat::OpenGLES);
+    format.setVersion(3, 2);
     format.setDefaultFormat(format);
     // 1.可以使用自己创建的 QGuiApplication 对象；
     // 2.可以在创建 QGuiApplication 之前为程序设置一些属性（如使用

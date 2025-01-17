@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import QtQuick 2.11
-import QtQuick.Window 2.11
-import QtQuick.Layouts 1.11
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Window
+import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import org.deepin.dtk 1.0
 import "../toolbar"
 import audio.global 1.0
@@ -49,6 +49,12 @@ FloatingPanel {
     id: toolbarRoot
     height:60
     width: parent.width
+
+    outsideBorderColor: Palette {
+        id: palette
+        normal: Qt.rgba(0, 0, 0, 0.04)
+    }
+
     anchors {
         left: parent.left
         right: parent.right
@@ -189,10 +195,12 @@ FloatingPanel {
                         width: 36
                         height: 36
                         anchors.verticalCenter: parent.verticalCenter
-                        icon.name: favorite ? "toolbar_like_check" : "toolbar_like"
-                        icon.width: 36
-                        icon.height: 36
+                        icon.name: favorite ? "heart_check" : "heart"
+                        icon.width: 20
+                        icon.height: 20
                         enabled: songTitle.length === 0 ? false : true
+                        palette.windowText: favorite ? "#F75B5B" : undefined
+                        // contentItem.theme: DTK.themeType
 
                         ToolTip {
                             visible: likeBtn.hovered
@@ -370,7 +378,7 @@ FloatingPanel {
                     width: 36
                     height: 36
                     anchors.verticalCenter: parent.verticalCenter
-                    icon.name: checked ? "toolbar_lrc_checked" : "toolbar_lrc"
+                    icon.name: "toolbar_lrc"
                     icon.width: 36
                     icon.height: 36
                     checkable: true
@@ -389,8 +397,8 @@ FloatingPanel {
                     width: 36
                     height: 36
                     anchors.verticalCenter: parent.verticalCenter
-                    icon.name: bMute ? (checked ? "toolbar_volume-_checked" : "toolbar_volume-")
-                                     : (checked ? "toolbar_volume+_checked" : "toolbar_volume+")
+                    icon.name: bMute ? ("toolbar_volume-")
+                                     : ("toolbar_volume+")
                     icon.width: 36
                     icon.height: 36
                     checkable: true
@@ -420,7 +428,7 @@ FloatingPanel {
                     width: 36
                     height: 36
                     anchors.verticalCenter: parent.verticalCenter
-                    icon.name: checked ? "toolbar_playlist_checked" : "toolbar_playlist"
+                    icon.name: "toolbar_playlist"
                     icon.width: 36
                     icon.height: 36
                     checkable: true
@@ -438,9 +446,29 @@ FloatingPanel {
         }
     }
 
+    SequentialAnimation {
+        id: btnRotationAnimator
+        RotationAnimator {
+            target: listBtn
+            from: 0
+            to: 15
+            duration: 500
+            easing.type: Easing.OutQuad
+        }
+        RotationAnimator {
+            target: listBtn
+            from: 15
+            to: 0
+            duration: 500
+            easing.type: Easing.OutElastic
+            easing.amplitude: 4
+            easing.period: 0.4
+        }
+    }
+
     Timer {
         id: volSliderHideTimer
-        interval: 3000
+        interval: 1000
         repeat: false
         running: false
         onTriggered: {
@@ -455,7 +483,7 @@ FloatingPanel {
 
     onPlayModeChanged: {
         globalVariant.curPlayMode = playMode
-        if (mediaData.hash == null)
+        if (mediaData.hash == "")
             return
 
         updatePlayControlBtnStatus()
@@ -563,6 +591,12 @@ FloatingPanel {
             volSliderHideTimer.start()
         } else {
             volSliderHideTimer.stop()
+        }
+    }
+
+    function startListBtnAnim() {
+        if (!btnRotationAnimator.running) {
+            btnRotationAnimator.start()
         }
     }
 

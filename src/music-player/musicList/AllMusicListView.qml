@@ -67,6 +67,7 @@ Rectangle {
         width: parent.width
         height: parent.height - 38
         anchors.top: headerView.bottom;
+        boundsBehavior: Flickable.StopAtBounds
         ScrollBar.vertical: ScrollBar {}
         model: mediaModel
         clip: true
@@ -77,7 +78,8 @@ Rectangle {
             autoExclusive: false
             width: listview.width - 40
             height: 56
-            backgroundVisible: index % 2 === 0
+            backgroundVisible: true
+            normalBackgroundVisible: index % 2 === 0
             delegateListHash: viewListHash
         }
 

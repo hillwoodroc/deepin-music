@@ -92,7 +92,8 @@ ItemDelegate {
                     anchors.left: parent.left; anchors.leftMargin: 5
                     anchors.verticalCenter: parent.verticalCenter
                     icon.width: 20; icon.height: 20
-                    icon.name: favourite ? "heart_check" : (sublistDelegate.checked ? "like_checked" : "heart")
+                    icon.name: favourite ? "heart_check" : "heart"
+                    palette.windowText: (favourite & !sublistDelegate.checked)  ? "#F75B5B" : undefined
                     onClicked: {
                         if(favourite === false) {
                             Presenter.addMetasToPlayList(hash, "fav")
@@ -127,8 +128,10 @@ ItemDelegate {
                     text: title
                     verticalAlignment: Qt.AlignVCenter
                     anchors.verticalCenter: imagecell.verticalCenter
+                    palette.text: DTK.themeType === ApplicationHelper.DarkType ? "#B2F7F7F7" : "#000000"
                     color: checked ? palette.highlightedText :
                                      (imagecell.isCurPlay ? palette.highlight : palette.text)
+                    font: DTK.fontManager.t7
                 }
                 Loader {
                     id: buttonsLoader;

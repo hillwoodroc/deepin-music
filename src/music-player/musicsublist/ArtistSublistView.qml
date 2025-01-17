@@ -20,10 +20,22 @@ Rectangle {
     property Menu importMenu: ImportMenu{}
     property Menu musicMoreMenu: MusicMoreMenu{pageHash: "artist"}
     property Menu selectMenu: MulitSelectMenu{pageHash: "artist"}
+    property point scalePoint: [0, 0]
+    property double xScale: 1.0
+    property double yScale: 1.0
 
     id: rootrectangle
     objectName: "artistSublist"
     color: "transparent"
+
+    transform: Scale {
+        id: scaleId
+        origin.x: scalePoint.x
+        origin.y: scalePoint.y
+        xScale: rootrectangle.xScale
+        yScale: rootrectangle.yScale
+    }
+
     MusicSublistTitle {
         id: musicSublistTitle
         anchors.left: rootrectangle.left; anchors.top: rootrectangle.top
@@ -68,6 +80,7 @@ Rectangle {
         height: rootrectangle.height - musicSublistTitle.height - 36
         anchors.left: musicSublistTitle.left/*; anchors.leftMargin: 20*/
         anchors.top: musicSublistTitle.bottom; anchors.topMargin: 36
+        boundsBehavior: Flickable.StopAtBounds
         ScrollBar.vertical: ScrollBar {
             id:artistSublistScrollBar
             stepSize:  mediaListModels.count > 1 ? 1 / mediaListModels.count : 0.1

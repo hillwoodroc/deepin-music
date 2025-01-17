@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QDBusInterface>
+#include <QCoreApplication>
 
 #include "playerengine.h"
 #include "lyricanalysis.h"
@@ -232,6 +233,14 @@ QImage Presenter::getEffectImage()
 void Presenter::setEffectImage(const QImage &img)
 {
     m_data->m_pkmeans->setShowImage(img);
+}
+
+void Presenter::forceExit()
+{
+    saveDataToDB();
+    qApp->processEvents();
+    QCoreApplication::exit(0);
+    _Exit(0);
 }
 
 QVariantList Presenter::getLyrics()

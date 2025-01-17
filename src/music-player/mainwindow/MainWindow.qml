@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import QtQuick 2.11
-import QtQuick.Window 2.11
+import QtQuick 2.15
+import QtQuick.Window 2.15
 import QtQuick.Layouts 1.11
 import org.deepin.dtk 1.0
-import Qt.labs.platform 1.0
+import Qt.labs.platform 1.1
 import audio.global 1.0
 import "../playlist"
 import "../dialogs"
@@ -162,14 +162,30 @@ ApplicationWindow {
         z: 10
     }
 
-    Loader { id: lrcWindowLoader }
+    Loader {
+        id: lrcWindowLoader
+
+        onLoaded: {
+            lrcWindowLoader.item.animationFinished.connect(onAnimationFinished)
+            lrcWindowLoader.item.animationStart.connect(onAnimationStart)
+        }
+
+        function onAnimationFinished(isShow) {
+            isLyricShow = !isShow
+        }
+        function onAnimationStart(show) {
+            musicTitle.toggleLyrics(show)
+        }
+    }
 
     Loader { id: playlistLoader }
 
     SystemTrayIcon{
         id: systemTray
         visible: true
-        iconName: "deepin-music"
+        // TODO: temporar setting, wait dtk fix IconEngine. icon.name is fallback
+        icon.name: "deepin-music"
+        icon.source: "qrc:/dsg/img/deepin-music.svg"
         tooltip: qsTr("Music")
 
         onActivated: {
@@ -212,7 +228,7 @@ ApplicationWindow {
             }
             MenuItem {
                 text: qsTr("Exit")
-                onTriggered: Qt.quit()
+                onTriggered: Presenter.forceExit();
             }
         }
     }
@@ -224,12 +240,16 @@ ApplicationWindow {
         //窗口显示完成后加载播放列表
         //console.log("onActiveChanged................", active, "  visibility:", visibility)
         if (active && playlistLoader.status === Loader.Null) {
-            playlistLoader.setSource("../playlist/CurrentPlayList.qml")
+            playlistLoader.setSource("qrc:/playlist/CurrentPlayList.qml")
             playlistLoader.item.width = 320
             playlistLoader.item.height = rootWindow.height - 90 - 50
             playlistLoader.item.y = height - playlistLoader.item.height - 80 - 50
             playlistLoader.item.playlistHided.connect(function(){
                 toolbox.updatePlaylistBtnStatus(false)
+            })
+            playlistLoader.item.playlistEmpty.connect(function(){
+                if (isLyricShow)
+                    lrcWindowLoader.item.lyricWindowUp()
             })
             toolbox.updatePlayControlBtnStatus()
         }
@@ -254,7 +274,7 @@ ApplicationWindow {
             globalVariant.closeConfirmDlgLoader.item.isMinimize = false
         } else if (closeAction == 1) {
             //退出
-            Qt.quit()
+            Presenter.forceExit();
         } else {
             //询问
             globalVariant.closeConfirmDlgLoader.item.isClose = Presenter.valueFromSettings("base.close.is_close")
@@ -337,6 +357,10 @@ ApplicationWindow {
             }
             messageBoxLoader.item.show();
         }
+
+        onClickPlayAllBtn: {
+            toolbox.startListBtnAnim()
+        }
     }
 
     function onAddOneMeta(playlistHashs, meta) {
@@ -369,7 +393,7 @@ ApplicationWindow {
         }
     }
     function onQuitRequested() {
-        Qt.quit()
+        Presenter.forceExit();
     }
     function onRaiseRequested() {
         //console.log("onRaiseRequested......................", rootWindow.visibility, rootWindow.visible)

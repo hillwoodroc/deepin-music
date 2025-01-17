@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import QtQuick 2.0
-import QtQuick.Window 2.11
-import QtQuick.Layouts 1.11
+import QtQuick
+import QtQuick.Window
+import QtQuick.Layouts
 import org.deepin.dtk 1.0
 import "../dialogs"
 
@@ -12,11 +12,19 @@ TitleBar {
     signal lrcHideBtnClicked()
     signal searchItemTriggered(string text, int type)
 
+    property bool preHover: false
+    property bool nextHover: false
+    property bool preMaskVisible: true
+    property bool nextMaskVisible: true
+    property double opat: 1.0
+    property double disableOpat: 0.4
+
     Loader { id: equalizerDlgLoader }
     Loader { id: settingDlgLoader }
 
     id: titleBar
-    icon.name: isLyricShow ? "" : globalVariant.appIconName
+    icon.name: globalVariant.appIconName
+    icon.opacity: opat
     hoverEnabled: false
     DciIcon {
         name: ""
@@ -84,7 +92,6 @@ TitleBar {
         HelpAction { }
         AboutAction {
             aboutDialog: AboutDialog {
-                width: 360; height:362
                 productName: qsTr("Music")
                 productIcon: globalVariant.appIconName
                 description: qsTr("Music is a local music player with beautiful design and simple functions.")
@@ -92,7 +99,9 @@ TitleBar {
                 companyLogo: globalVariant.appIconName
                 websiteName: DTK.deepinWebsiteName
                 websiteLink: DTK.deepinWebsiteLink
-                license: qsTr("%1 is released under %2").arg("Music").arg("GPLV3")
+                header: DialogTitleBar {
+                    enableInWindowBlendBlur: false
+                }
             }
         }
         QuitAction {}
@@ -128,15 +137,59 @@ TitleBar {
     }
     content: titleBarContent
 
+    Rectangle {
+        id: preMask
+        width: 36
+        height: width
+        x: 240
+        y: 7
+        visible: preMaskVisible
+        color: "transparent"
+
+        MouseArea {
+            anchors.fill: preMask
+            hoverEnabled: true
+            onEntered: {
+                preHover = true
+            }
+            onExited: {
+                preHover = false
+            }
+        }
+    }
+
+    Rectangle {
+        id: nextMask
+        width: preMask.width
+        height: preMask.width
+        x: 286
+        y: 7
+        visible: nextMaskVisible
+        color: "transparent"
+
+        MouseArea {
+            anchors.fill: nextMask
+            hoverEnabled: true
+            onEntered: {
+                nextHover = true
+            }
+            onExited: {
+                nextHover = false
+            }
+        }
+    }
+
     Component {
         id: titleBarContent
 
         RowLayout {
+            id: titleRowLayout
             width: parent.width - 20
             anchors {
                 left: parent.left
                 leftMargin: 30
             }
+
 
             RowLayout {
                 spacing: 10
@@ -144,14 +197,18 @@ TitleBar {
                     id: preBtn
                     icon.name: "arrow_ordinary_left"
                     visible: !isLyricShow
+                    opacity: (globalVariant.globalSwitchButtonStatus === 2) ? opat: disableOpat
                     enabled: (globalVariant.globalSwitchButtonStatus === 2) ? true: false
                     hoverEnabled: true
                     onClicked: {
                         globalVariant.globalSwitchButtonStatus = 1; //切换到上一级页面
                     }
+                    onEnabledChanged: {
+                        preMaskVisible = !enabled
+                    }
 
                     ToolTip {
-                        visible: preBtn.hovered
+                        visible: preHover || preBtn.hovered
                         text: qsTr("Previous page")
                     }
                 }
@@ -159,12 +216,15 @@ TitleBar {
                     id: nextBtn
                     icon.name: "arrow_ordinary_right"
                     visible: !isLyricShow
+                    opacity: (globalVariant.globalSwitchButtonStatus === 1) ? opat: disableOpat
                     enabled: (globalVariant.globalSwitchButtonStatus === 1) ? true: false
                     hoverEnabled: true
                     onClicked: {globalVariant.globalSwitchButtonStatus = 2;} //切换到下一级页面
-
+                    onEnabledChanged: {
+                        nextMaskVisible = !enabled
+                    }
                     ToolTip {
-                        visible: nextBtn.hovered
+                        visible: nextHover || nextBtn.hovered
                         text: qsTr("Next page")
                     }
                 }
@@ -172,6 +232,7 @@ TitleBar {
             SearchEdit {
                 id: searchEdit
                 visible: !isLyricShow
+                opacity: opat
                 Layout.preferredWidth: 300
                 Layout.alignment: Qt.AlignCenter
                 placeholder: qsTr("Search")
@@ -256,9 +317,10 @@ TitleBar {
                 id: addBtn
                 icon.name: "action_add"
                 visible: !isLyricShow
+                opacity: opat
                 hoverEnabled: true
                 Layout.alignment: Qt.AlignRight
-                Layout.rightMargin: 20
+                Layout.rightMargin: 40
 
                 ToolTip {
                     visible: addBtn.hovered
@@ -269,6 +331,50 @@ TitleBar {
                     globalVariant.globalFileDlgOpen()
                 }
             }
+        }
+    }
+
+    function toggleLyrics(toggle) {
+        if (toggle) {
+            raiseTitlebarAnimation.start()
+        } else {
+            hideTitlebarAnimation.start()
+        }
+    }
+
+    ParallelAnimation {
+        id: hideTitlebarAnimation
+        NumberAnimation {
+            target: titleBar
+            property: "opat"
+            from: 0
+            to: 1
+            duration: 200
+        }
+        NumberAnimation {
+            target: titleBar
+            property: "disableOpat"
+            from: 0
+            to: 0.4
+            duration: 200
+        }
+    }
+
+    ParallelAnimation {
+        id: raiseTitlebarAnimation
+        NumberAnimation {
+            target: titleBar
+            property: "opat"
+            from: 1
+            to: 0
+            duration: 200
+        }
+        NumberAnimation {
+            target: titleBar
+            property: "disableOpat"
+            from: 0.4
+            to: 0
+            duration: 200
         }
     }
 }

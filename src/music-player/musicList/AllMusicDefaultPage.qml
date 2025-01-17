@@ -12,8 +12,7 @@ Rectangle {
     property string pageHash: ""
 //    property FileDialog fileDlg: FileDialog{}
     property FolderDialog folderDlg: FolderDialog{}
-    color: Qt.rgba(0, 0, 0, 0)
-
+    color: "transparent"
     StackView {
         id: defaultStackview
         anchors.centerIn: parent
@@ -25,7 +24,7 @@ Rectangle {
         id: allmusicDefault
         anchors.centerIn: parent
         anchors.top: parent.top; anchors.topMargin: 107
-        color: Qt.rgba(0, 0, 0, 0)
+        color: "transparent"
         width: 376; height: 242
         visible: false;
         Image {
@@ -61,7 +60,8 @@ Rectangle {
             Label {
                 id: lable
                 height: 20
-                color: Qt.rgba(0, 0, 0, 0.4)
+                color: DTK.themeType === ApplicationHelper.DarkType ? Qt.rgba(247, 247, 247, 0.7)
+                                                                    : Qt.rgba(0, 0, 0, 0.4)
                 text: qsTr("Drag music files here or");
             }
             Label {
@@ -72,7 +72,7 @@ Rectangle {
                     anchors.fill: parent
                     acceptedButtons: Qt.LeftButton
                     onClicked: {
-                        Presenter.importMetas(null,pageHash);
+                        Presenter.importMetas({}, pageHash);
                     }
                 }
             }
@@ -81,7 +81,7 @@ Rectangle {
 
     Rectangle {
         id: favmusicDefault
-        color: Qt.rgba(0, 0, 0, 0)
+        color: "transparent"
         width: 376; height: 242
         visible: false;
         Image {
@@ -104,7 +104,7 @@ Rectangle {
             height: childrenRect.height
             anchors.top: favouriteLable.bottom; anchors.topMargin: 13
             anchors.horizontalCenter: parent.horizontalCenter
-            color: Qt.rgba(0, 0, 0, 0)
+            color: "transparent"
 
             Row {
                 Text {
@@ -116,6 +116,7 @@ Rectangle {
                     name: "default_heart"
                     sourceSize: Qt.size(20, 20)
                     anchors.verticalCenter: parent.verticalCenter
+                    theme: DTK.themeType
                 }
                 Text {
                     text: qsTr("” to add a song to My Favorites")
@@ -136,7 +137,7 @@ Rectangle {
 
     Rectangle {
         id: songListDefault
-        color: Qt.rgba(0, 0, 0, 0)
+        color: "transparent"
         width: 376; height: 242
         visible: false;
         Image {
@@ -161,6 +162,7 @@ Rectangle {
                     name: "default_add"
                     sourceSize: Qt.size(20, 20)
                     anchors.verticalCenter: parent.verticalCenter
+                    theme: DTK.themeType
                 }
                 Text {
                     text: qsTr("” to add songs to the playlist")

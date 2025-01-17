@@ -4,16 +4,15 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 import org.deepin.dtk 1.0
-import org.deepin.dtk.impl 1.0 as D
 import org.deepin.dtk.style 1.0 as DS
 
 import audio.global 1.0
 import "../musicmousemenu"
 import "../dialogs"
 
-FloatingPanel {
+CurrentFloatingPanel {
     property int  headerHeight: 73
     property ListModel listmodel: PlayListModel{}
     property Menu playlistMoreMenu: MusicMoreMenu{pageHash:"play"}
@@ -21,47 +20,49 @@ FloatingPanel {
     property Menu selectMenu: MulitSelectMenu{pageHash: "play"}
     property MusicInfoDialog infoDialog: MusicInfoDialog{musicData: playlistView.model.get(0)}
     signal playlistHided()
+    signal playlistEmpty()
 
     id: playlistRoot
     visible: isPlaylistShow
     width: 320
     height: parent.height - 90
     radius: 8
-    background: D.InWindowBlur {
-        implicitWidth: DS.Style.floatingMessage.panel.width
-        implicitHeight: DS.Style.floatingMessage.panel.height
-        radius: 32
-        offscreen: true
+    // background: InWindowBlur {
+    //     implicitWidth: DS.Style.floatingMessage.panel.width
+    //     implicitHeight: DS.Style.floatingMessage.panel.height
+    //     anchors.fill: parent
+    //     radius: 32
+    //     offscreen: true
 
-        D.ItemViewport {
-            anchors.fill: parent
-            fixed: true
-            sourceItem: parent
-            radius: playlistRoot.radius
-            hideSource: false
-        }
+    //     ItemViewport {
+    //         anchors.fill: parent
+    //         fixed: true
+    //         sourceItem: parent
+    //         radius: playlistRoot.radius
+    //         hideSource: false
+    //     }
 
-        BoxShadow {
-            anchors.fill: backgroundRect
-            shadowOffsetX: 0
-            shadowOffsetY: 4
-            shadowColor: playlistRoot.D.ColorSelector.dropShadowColor
-            shadowBlur: 20
-            cornerRadius: backgroundRect.radius
-            spread: 0
-            hollow: true
-        }
-        Rectangle {
-            id: backgroundRect
-            anchors.fill: parent
-            radius: playlistRoot.radius
-            color: playlistRoot.D.ColorSelector.backgroundColor
-            border {
-                //color: playlistRoot.D.ColorSelector.borderColor
-                width: /*DS.Style.control.borderWidth*/0
-            }
-        }
-    }
+    //     BoxShadow {
+    //         anchors.fill: backgroundRect
+    //         shadowOffsetX: 0
+    //         shadowOffsetY: 4
+    //         shadowColor: playlistRoot.D.ColorSelector.borderColor
+    //         shadowBlur: 20
+    //         cornerRadius: backgroundRect.radius
+    //         spread: 0
+    //         hollow: true
+    //     }
+    //     Rectangle {
+    //         id: backgroundRect
+    //         anchors.fill: parent
+    //         radius: playlistRoot.radius
+    //         color: playlistRoot.D.ColorSelector.borderColor
+    //         border {
+    //             //color: playlistRoot.D.ColorSelector.borderColor
+    //             width: /*DS.Style.control.borderWidth*/0
+    //         }
+    //     }
+    // }
 
     MouseArea {
         anchors.fill: parent
@@ -131,10 +132,12 @@ FloatingPanel {
                         padding: 0
                         textColor: Palette {
                             normal: palette.text
+                            normalDark: palette.text
                             hovered: palette.highlight
                         }
 
                         onClicked: {
+                            playlistEmpty()
                             listmodel.clear()
                             Presenter.clearPlayList("play")
                         }
@@ -153,6 +156,7 @@ FloatingPanel {
             height: parent.height - headerHeight
             anchors.left: parent.left
             ScrollBar.vertical: ScrollBar {}
+            boundsBehavior: Flickable.StopAtBounds
             clip: true
             focus: true
             model: listmodel
@@ -162,7 +166,8 @@ FloatingPanel {
                 height: 56
                 anchors.left: parent.left
                 anchors.leftMargin: 10
-                backgroundVisible: index % 2 === 0
+                backgroundVisible: true
+                normalBackgroundVisible: index % 2 === 0
                 autoExclusive: false
             }
 

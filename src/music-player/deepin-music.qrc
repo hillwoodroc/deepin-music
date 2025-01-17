@@ -27,6 +27,7 @@
         <file>singerlist/ArtistGridDelegate.qml</file>
         <file>allItems/CircularImg.qml</file>
         <file>playlist/CurrentPlayList.qml</file>
+        <file>playlist/CurrentFloatingPanel.qml</file>
         <file>playlist/CurrentPlayListDelegate.qml</file>
         <file>toolbar/VolumeSlider.qml</file>
         <file>dialogs/EqualizerDialog.qml</file>
@@ -85,5 +86,12 @@
         <file>dialogs/CDRemovedDialog.qml</file>
         <file>playlist/PlayListModel.qml</file>
         <file>allItems/CircularButton.qml</file>
+        <file>lyric/qsbfile/EffectWaterWave.qsb</file>
+        <file>lyric/qsbfile/EffectParticle.qsb</file>
+        <file>lyric/qsbfile/EffectSun.qsb</file>
+        <file>lyric/qsbfile/EffectLine.qsb</file>
+        <file>lyric/qsbfile/EffectLightWave.qsb</file>
+        <file>lyric/qsbfile/cusVertex.qsv</file>
+        <file>lyric/qsbfile/default.qsb</file>
     </qresource>
 </RCC>

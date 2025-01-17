@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import QtQuick 2.0
-import QtQuick.Dialogs 1.3
+import QtQuick.Dialogs
 import Qt.labs.platform 1.0
 
 FileDialog {
@@ -12,13 +12,16 @@ FileDialog {
       folder: StandardPaths.writableLocation(StandardPaths.MusicLocation)
       nameFilters: {
           var suffix = Presenter.supportedSuffixList()
-          var string = suffix[0]
+          var string = qsTr("All Music")
+          string += "("
+          string += suffix[0]
           var suffixList = []
 
           for (var i = 1; i < suffix.length; i++) {
               string += " "
               string += suffix[i]
           }
+          string += ")"
 
           suffixList.push(string)
           //console.log(string)

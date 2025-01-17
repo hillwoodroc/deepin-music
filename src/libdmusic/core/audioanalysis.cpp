@@ -38,6 +38,9 @@ extern "C" {
 #include <QBuffer>
 #include <QDebug>
 #include <QImageReader>
+#include <QAudioFormat>
+#include <QAudioSource>
+#include <QMediaDevices>
 
 #include "dynamiclibraries.h"
 #include "global.h"
@@ -90,7 +93,7 @@ public:
 private:
     friend class AudioAnalysis;
     AudioAnalysis                  *m_parent                  = nullptr;
-    QAudioInput                    *m_audioInput              = nullptr;
+    QAudioSource                   *m_audioSource             = nullptr;
     QIODevice                      *m_audioDevice             = nullptr;
     AudioDataDetector              *m_audioDataDetector       = nullptr;
 };
@@ -277,7 +280,15 @@ bool AudioAnalysis::parseMetaFromLocalFile(DMusic::MediaMeta &meta)
         AVFormatContext *pFormatCtx = format_alloc_context();
         format_open_input(&pFormatCtx, curFilePath.toStdString().c_str(), nullptr, nullptr);
         if (pFormatCtx) {
-            format_find_stream_info(pFormatCtx, nullptr);
+            int ret = format_find_stream_info(pFormatCtx, nullptr);
+            if (ret < 0)
+                return false;
+            bool hasAudio = false;
+            for (int i = 0; i < pFormatCtx->nb_streams; i++)
+                if (pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+                    hasAudio = true;
+            if (!hasAudio)
+                return false;
             int64_t duration = pFormatCtx->duration / 1000;
             if (duration > 0) {
                 meta.length = duration;
@@ -565,37 +576,38 @@ void AudioAnalysis::startRecorder()
     // 初始化
     if (m_data->m_audioDevice == nullptr) {
         QAudioFormat audioFormat;
-        audioFormat.setByteOrder(QAudioFormat::LittleEndian);
+        //TODO: 设置小端输出及格式
+        // audioFormat.setByteOrder(QAudioFormat::LittleEndian);
+        // audioFormat.setCodec("audio/pcm");
         audioFormat.setChannelCount(1);
-        audioFormat.setCodec("audio/pcm");
         audioFormat.setSampleRate(44100);
-        audioFormat.setSampleSize(16);
-        audioFormat.setSampleType(QAudioFormat::SignedInt);
+        audioFormat.setSampleFormat(QAudioFormat::Int16);
 
-        QAudioDeviceInfo devInfo = QAudioDeviceInfo::defaultInputDevice();
+        QAudioDevice devInfo = QMediaDevices::defaultAudioOutput();
         if (devInfo.isNull()) qDebug() << __func__;
         if (!devInfo.isFormatSupported(audioFormat)) qDebug() << __func__;
 
-        if (nullptr == m_data->m_audioInput)
-            m_data->m_audioInput = new  QAudioInput(devInfo, audioFormat, this);
-        m_data->m_audioDevice = m_data->m_audioInput->start();
+        if (nullptr == m_data->m_audioSource)
+            m_data->m_audioSource = new QAudioSource(devInfo, audioFormat, this);
+        // TODO:source连接问题待确认
+        // m_data->m_audioDevice = m_data->m_audioSource->start();
         connect(m_data->m_audioDevice, &QIODevice::readyRead, this, &AudioAnalysis::parseData);
     } else {
-        m_data->m_audioInput->resume();
+        m_data->m_audioSource->resume();
     }
 }
 
 void AudioAnalysis::suspendRecorder()
 {
-    if (nullptr != m_data->m_audioInput) {
-        m_data->m_audioInput->suspend();
+    if (nullptr != m_data->m_audioSource) {
+        m_data->m_audioSource->suspend();
     }
 }
 
 void AudioAnalysis::stopRecorder()
 {
-    if (nullptr != m_data->m_audioInput) {
-        m_data->m_audioInput->stop();
+    if (nullptr != m_data->m_audioSource) {
+        m_data->m_audioSource->stop();
     }
     m_data->m_audioDevice->deleteLater();
     m_data->m_audioDevice = nullptr;

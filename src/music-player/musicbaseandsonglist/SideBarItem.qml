@@ -10,11 +10,12 @@ import QtQuick.Controls 2.0
 import org.deepin.dtk 1.0
 import "../dialogs"
 
-Column {
+ColumnLayout {
     property string title
     property string type
     property ListModel sideModel
     property alias view: sideListView
+    property bool fillHeight: false
     property Component action
     signal itemClicked(string key, string text)
     signal itemRightClicked(string key, string text)
@@ -22,7 +23,7 @@ Column {
 
     id: control
     spacing: 10
-    leftPadding: 10
+    Layout.leftMargin: 10
 
     Rectangle {
         id: siderTitle
@@ -48,16 +49,22 @@ Column {
     ListView {
         id: sideListView
         width: 200
-        height: contentHeight
+
         Layout.alignment: Qt.AlignLeft
+        Layout.fillHeight: fillHeight
         Layout.leftMargin: 10
         model: sideModel
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
+
         delegate: SideBarItemDelegate{
             id: sidebarItem
-            width: 200; height: 36
-            backgroundVisible: false
+            width: 180; height: 36
+            backgroundVisible: true
+            normalBackgroundVisible: false
             ButtonGroup.group: group
             type: control.type
+            font: DTK.fontManager.t6
         }
 
         Keys.onPressed: {

@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import QtQuick 2.11
-import QtQuick.Layouts 1.11
-import QtQuick.Controls 2.0
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
 import audio.global 1.0
 import org.deepin.dtk 1.0
 import "../allItems"
@@ -118,6 +118,7 @@ ItemDelegate {
                             visible: sublistDelegate.hovered || activeMeta
                             ColorSelector.hovered: !sublistDelegate.checked
                             ColorSelector.pressed: false
+                            palette.windowText: sublistDelegate.hovered ? Qt.rgba(247, 247, 247, 1) : undefined
                             onClicked:{
                                 if(playing && activeMeta) {
                                     Presenter.pause();
@@ -136,7 +137,8 @@ ItemDelegate {
                             id: heartbutton
                             anchors.verticalCenter: parent.verticalCenter
                             icon.width: 20; icon.height: 20
-                            icon.name: model.favourite ? "heart_check" : (sublistDelegate.checked ? "like_checked" : "heart")
+                            icon.name: model.favourite ? "heart_check" : "heart"
+                            palette.windowText: (favourite & !sublistDelegate.checked)  ? "#F75B5B" : undefined
                             onClicked: {
                                 if(favourite === false){
                                     Presenter.addMetasToPlayList(hash, "fav")
@@ -164,8 +166,10 @@ ItemDelegate {
                         text: title
                         verticalAlignment: Qt.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
+                        palette.text: DTK.themeType === ApplicationHelper.DarkType ? "#B2F7F7F7" : "#000000"
                         color: checked ? palette.highlightedText :
                                          (activeMeta ? palette.highlight : palette.text)
+                        font: DTK.fontManager.t7
 
                     }
                     Loader {

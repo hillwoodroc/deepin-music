@@ -3,12 +3,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import QtQuick 2.0
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 
 Rectangle {
     property int sampleCount: Math.abs(parent.width / sampleRectWidth / 2)
     property int sampleRectWidth: 2
     property int waveformHeight: 30
+
+    property color stripedStartColor
+    property color stripedEndColor
 
     width: 360
     height: 30
@@ -48,6 +51,8 @@ Rectangle {
             itemWidth: sampleRectWidth
             itemCount: sampleCount
             chromatic: true
+            startColor: stripedStartColor
+            endColor: stripedEndColor
         }
     }
     Item {
