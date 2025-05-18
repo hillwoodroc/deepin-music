@@ -94,7 +94,8 @@ Rectangle {
             width: listview.width - 40
             height: 56
             anchors.horizontalCenter: parent.horizontalCenter
-            backgroundVisible: index % 2 === 0
+            backgroundVisible: true
+            normalBackgroundVisible: index % 2 === 0
             autoExclusive: false
             checked: mediaListModels.get(index).inMulitSelect
         }
@@ -233,6 +234,12 @@ Rectangle {
             for (var i = 0; i < drop.urls.length; i++)
                 list.push(drop.urls[i])
             Presenter.importMetas(list, globalVariant.curListPage)
+        }
+    }
+
+    onArtistDataChanged: {
+        if (artistData && artistData.musicinfos !== undefined) {
+            mediaListModels.meidaDataMap = artistData.musicinfos
         }
     }
 }

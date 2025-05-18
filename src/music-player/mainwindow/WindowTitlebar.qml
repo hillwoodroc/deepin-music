@@ -18,6 +18,7 @@ TitleBar {
     property bool nextMaskVisible: true
     property double opat: 1.0
     property double disableOpat: 0.4
+    property var searchEditRef: null
 
     Loader { id: equalizerDlgLoader }
     Loader { id: settingDlgLoader }
@@ -236,6 +237,7 @@ TitleBar {
                 Layout.preferredWidth: 300
                 Layout.alignment: Qt.AlignCenter
                 placeholder: qsTr("Search")
+                enabled: Presenter.isExistMeta()
                 Keys.onReturnPressed: {
                     //console.log("SearchEdit: Keys.onEnterPressed....")
                     if (text.length <= 0 || searchResDlg.songList == null)
@@ -294,8 +296,19 @@ TitleBar {
                     }
                 }
 
+                function importFinishedDatas(playlistHashs, failCount, sucessCount, existCount) {
+                    searchEdit.enabled = Presenter.isExistMeta()
+                }
+
+                function deleteFinishedDatas(playlistHash) {
+                    searchEdit.enabled = Presenter.isExistMeta()
+                }
+
                 Component.onCompleted: {
+                    Presenter.importFinished.connect(importFinishedDatas);
+                    Presenter.deleteFinished.connect(deleteFinishedDatas);
                     EventsFilter.mousePress.connect(onMousePressed)
+                    searchEditRef = searchEdit
                 }
             }
             SearchResultDialog {
@@ -375,6 +388,15 @@ TitleBar {
             from: 0.4
             to: 0
             duration: 200
+        }
+    }
+
+    Connections {
+        target: globalVariant
+        function onShowSearchEdit() {
+            if (!isLyricShow && searchEditRef) {
+                searchEditRef.forceActiveFocus()
+            }
         }
     }
 }

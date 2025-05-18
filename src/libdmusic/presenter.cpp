@@ -97,6 +97,9 @@ Presenter::Presenter(const QString &unknownAlbumStr, const QString &unknownArtis
             emit updateCDStatus(state);
         }
     });
+    connect(m_data->m_playerEngine, &PlayerEngine::playPlaylistRequested, this, [this](const QString &playlistHash){
+        playPlaylist(playlistHash);
+    });
     connect(m_data->m_playerEngine, &PlayerEngine::quitRequested, this, &Presenter::quitRequested);
     connect(m_data->m_playerEngine, &PlayerEngine::raiseRequested, this, &Presenter::raiseRequested);
 
@@ -536,7 +539,11 @@ void Presenter::playPlaylist(const QString &playlistHash, const QString &metaHas
         m_data->m_playerEngine->setMediaMeta(metaHash);
     }
     m_data->m_playerEngine->setCurrentPlayList(playlistHash);
-    m_data->m_playerEngine->play();
+    if (playlistHash == "musicResult" && metaHash.isEmpty()) {
+        m_data->m_playerEngine->forcePlay();
+    } else {
+        m_data->m_playerEngine->play();
+    }
 
     m_data->m_dataManager->setCurrentPlayliHash(playlistHash);
     m_data->m_dataManager->clearPlayList("play", false);
@@ -559,6 +566,10 @@ QString Presenter::getCurrentPlayList()
 void Presenter::importMetas(const QStringList &urls, const QString &playlistHash, const bool &playFalg)
 {
     qDebug() << __func__;
+    if (urls.isEmpty()) {
+        qInfo() << "importMetas urls is empty";
+        return;
+    }
     m_data->m_dataManager->importMetas(urls, playlistHash, playFalg);
 }
 

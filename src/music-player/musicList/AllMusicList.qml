@@ -26,6 +26,7 @@ Rectangle {
             id: toolButtonItem
             width: rootRectangle.width - 40; height: 68;
             title: listTitle
+            isPlayAll: rootRectangle.mediaModels.count > 0 ? true : false
             musicinfo: rootRectangle.mediaModels.count === 1 ? qsTr("1 song") : qsTr("%1 songs").arg(rootRectangle.mediaModels.count)
             isDefault: (rootRectangle.mediaModels.count === 0) ? false : true
             pageHash: rootRectangle.listHash
@@ -37,6 +38,7 @@ Rectangle {
             visible: (rootRectangle.mediaModels.count === 0) ? true : false
         }
         AllMusicListView {
+            id: musicListView
             width: rootRectangle.width
             height: rootRectangle.height - toolButtonItem.height/* - 70*/
             mediaModel: mediaModels
@@ -111,6 +113,12 @@ Rectangle {
             default:
                 toolButtonItem.sortType = -1
             }
+        }
+    }
+
+    function selectAll() {
+        if (musicListView && musicListView.visible) {
+            musicListView.selectAll();
         }
     }
 }

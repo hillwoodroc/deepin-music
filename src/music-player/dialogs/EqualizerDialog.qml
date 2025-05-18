@@ -100,7 +100,7 @@ DialogWindow {
                     Row {
                         anchors.verticalCenter: parent.verticalCenter
 
-                        Text {
+                        Label {
                             width: contentWidth < 55 ? 55 : contentWidth
                             anchors.verticalCenter: parent.verticalCenter
                             text: qsTr("Equalizer")
@@ -144,6 +144,7 @@ DialogWindow {
                         id: selectComBox
                         width: parent.width
                         height: parent.height
+                        maxVisibleItems: 9
 
                         textRole: "text"
                         iconNameRole: "icon"

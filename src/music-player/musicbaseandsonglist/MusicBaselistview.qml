@@ -83,6 +83,16 @@ Rectangle {
             onItemClicked: {
                 musicBaselistChanged(key, text);
             }
+            onItemRightClicked: {
+                if (sidebarMenuLoader.status === Loader.Null) {
+                    sidebarMenuLoader.setSource("../musicmousemenu/SidebarMenu.qml")
+                }
+                if (sidebarMenuLoader.status === Loader.Ready) {
+                    sidebarMenuLoader.item.pageHash = key;
+                    sidebarMenuLoader.item.updateMenuState();
+                    sidebarMenuLoader.item.popup();
+                }
+            }
         }
         Connections {
             target: musicSonglist
@@ -96,6 +106,7 @@ Rectangle {
                     sidebarMenuLoader.setSource("../musicmousemenu/SidebarMenu.qml")
                 if (sidebarMenuLoader.status === Loader.Ready ) {
                     sidebarMenuLoader.item.pageHash = key;
+                    sidebarMenuLoader.item.updateMenuState();
                     sidebarMenuLoader.item.popup();
                 }
             }

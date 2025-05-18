@@ -12,7 +12,17 @@ Menu{
 
     id: playlistMenu
     width: 200
+
+    function updateMenuState() {
+        if (["album", "artist"].includes(playlistMenu.pageHash)) {
+            playMenuItem.enabled = Presenter.isExistMeta()
+        } else {
+            playMenuItem.enabled = Presenter.playlistMetaCount(playlistMenu.pageHash) > 0
+        }
+    }
+
     MenuItem {
+        id: playMenuItem
         text: qsTr("Play")
         onTriggered: {
             Presenter.playPlaylist(playlistMenu.pageHash);
@@ -27,7 +37,7 @@ Menu{
         }
     }
     MenuItem {
-        visible: (pageHash === "fav") ? false : true
+        visible: !["fav", "all", "album", "artist"].includes(pageHash)
         height: visible ? 36: 0
         text: qsTr("Rename")
         onTriggered: {
@@ -41,7 +51,7 @@ Menu{
     }
     MenuItem {
         id: deletePlaylist
-        visible: (pageHash === "fav") ? false : true
+        visible: !["fav", "all", "album", "artist"].includes(pageHash)
         height: visible ? 36: 0
         text: qsTr("Delete");
         onTriggered: {
